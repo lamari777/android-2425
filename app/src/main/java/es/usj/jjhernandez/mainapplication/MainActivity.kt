@@ -1,7 +1,11 @@
 package es.usj.jjhernandez.mainapplication
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.View.OnClickListener
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +22,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
         Log.v(TAG, "onCreate called")
+
+        view.btnNavigateToSecond.setOnClickListener {
+            val intent = Intent(this, SecondActivity::class.java)
+            startActivity(intent)
+        }
+
+        view.btnCall.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL,
+                Uri.parse("tel:911"))
+            startActivity(intent)
+        }
     }
 
     override fun onStart() {
