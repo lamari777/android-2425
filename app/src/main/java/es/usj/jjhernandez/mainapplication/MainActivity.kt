@@ -1,19 +1,17 @@
 package es.usj.jjhernandez.mainapplication
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.View.OnClickListener
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
 
 const val TAG = "LOG"
+const val REQUEST_CODE = 999
+
 class MainActivity : AppCompatActivity() {
 
     private val view by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -31,7 +29,24 @@ class MainActivity : AppCompatActivity() {
         view.btnCall.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL,
                 Uri.parse("tel:911"))
-            startActivity(intent)
+            try {
+                startActivity(intent)
+            } catch (ex: ActivityNotFoundException) {
+                print(ex.message)
+            }
+        }
+
+        view.btnForResult.setOnClickListener {
+            val intent = Intent(this, SecondActivity::class.java)
+            startActivityForResult(intent , REQUEST_CODE)
+        }
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            Toast.makeText(this, "Well done ${data?.getStringExtra(EXTRA_KEY)}", Toast.LENGTH_SHORT).show()
         }
     }
 

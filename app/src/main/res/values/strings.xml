@@ -2,4 +2,6 @@
     <string name="app_name">MainApplication</string>
     <string name="to_second">To Second</string>
     <string name="call_911">Call 911</string>
+    <string name="start_for_result">Start for Result</string>
+    <string name="finish">Finish</string>
 </resources>
