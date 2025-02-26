@@ -1,5 +1,6 @@
 package es.usj.jjhernandez.mainapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivitySecondBinding
@@ -16,9 +17,11 @@ class SecondActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
         view.btnResult.setOnClickListener {
-            intent.putExtra(EXTRA_KEY, "Juanjo")
+            val intent = Intent()
+            intent.putExtra(EXTRA_KEY, "Hola")
             setResult(RESULT_OK, intent)
             finish()
+
         }
     }
 
