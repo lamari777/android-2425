@@ -1,10 +1,9 @@
 package es.usj.jjhernandez.mainapplication
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivitySecondBinding
-
-const val EXTRA_KEY = "key"
 
 class SecondActivity : AppCompatActivity() {
 
@@ -15,11 +14,26 @@ class SecondActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
-        view.btnResult.setOnClickListener {
-            intent.putExtra(EXTRA_KEY, "Juanjo")
-            setResult(RESULT_OK, intent)
-            finish()
+
+
+        view.rgProfile.setOnCheckedChangeListener { _, selection ->
+            when(selection) {
+                R.id.rbCitizen -> displayCitizen()
+                else -> displayCompany()
+            }
         }
+
+        view.rbCitizen.isChecked = true
+        displayCitizen()
     }
 
+    private fun displayCitizen() {
+        view.citizenLayout.visibility = View.VISIBLE
+        view.companyLayout.visibility = View.GONE
+    }
+
+    private fun displayCompany() {
+        view.citizenLayout.visibility = View.GONE
+        view.companyLayout.visibility = View.VISIBLE
+    }
 }
