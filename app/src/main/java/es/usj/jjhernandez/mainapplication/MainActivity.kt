@@ -6,6 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.component1
+import androidx.activity.result.component2
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
 
@@ -15,6 +18,11 @@ const val REQUEST_CODE = 999
 class MainActivity : AppCompatActivity() {
 
     private val view by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val contract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+        val (_, data) = activityResult
+        Toast.makeText(this, "Well done ${data?.getStringExtra(EXTRA_KEY)}", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         view.btnForResult.setOnClickListener {
             val intent = Intent(this, SecondActivity::class.java)
-            startActivityForResult(intent , REQUEST_CODE)
+            contract.launch(intent)
         }
     }
 
