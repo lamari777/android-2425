@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivitySecondBinding
+import android.content.Intent
+
+const val COMPANY_ID_KEY = "company-id"
 
 class SecondActivity : AppCompatActivity() {
 
@@ -15,6 +18,17 @@ class SecondActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
 
+        view.btnExecute.setOnClickListener {
+            if(view.rbCompany.isChecked) {
+                val id = view.etCompanyId.text
+                val intent = Intent(this, ThirdActivity::class.java)
+                intent.putExtra(COMPANY_ID_KEY, id)
+                startActivity(intent)
+            } else {
+                val intent = Intent(this, FourthActivity::class.java)
+                startActivity(intent)
+            }
+        }
 
         view.rgProfile.setOnCheckedChangeListener { _, selection ->
             when(selection) {
