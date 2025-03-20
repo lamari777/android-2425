@@ -52,7 +52,7 @@
                 android:id="@+id/btnCall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Call" />
+                android:text="@string/call" />
         </TableRow>
 
         <TableRow
@@ -70,7 +70,7 @@
                 android:id="@+id/btnSend"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Send" />
+                android:text="@string/send" />
         </TableRow>
 
         <TableRow
@@ -88,7 +88,7 @@
                 android:id="@+id/btnOpen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Open" />
+                android:text="@string/open" />
         </TableRow>
 
     </TableLayout>
