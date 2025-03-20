@@ -15,7 +15,7 @@ class ThirdActivity : AppCompatActivity() {
         setContentView(view.root)
 
 
-        val companyId = intent.extras?.get(COMPANY_ID_KEY).toString() ?: "Not received"
+        val companyId = intent.getStringExtra(COMPANY_ID_KEY) ?: "Not received"
         view.tvCompanyId.text = companyId
 
         view.btnCall.setOnClickListener {  }

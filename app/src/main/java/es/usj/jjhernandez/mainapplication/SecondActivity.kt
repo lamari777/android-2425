@@ -22,7 +22,7 @@ class SecondActivity : AppCompatActivity() {
             if(view.rbCompany.isChecked) {
                 val id = view.etCompanyId.text
                 val intent = Intent(this, ThirdActivity::class.java)
-                intent.putExtra(COMPANY_ID_KEY, id)
+                intent.putExtra(COMPANY_ID_KEY, id.toString())
                 startActivity(intent)
             } else {
                 val intent = Intent(this, FourthActivity::class.java)
