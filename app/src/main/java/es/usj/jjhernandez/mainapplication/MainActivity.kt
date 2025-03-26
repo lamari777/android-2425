@@ -19,10 +19,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
-        view.ltCountries.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, items)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, items)
+        view.ltCountries.adapter = adapter
         view.ltCountries.setOnItemClickListener { _, _, position, _ ->
-            val text = items[position]
-            Toast.makeText(this, "You clicked: $text", Toast.LENGTH_SHORT).show()
+            val elementToRemove = items[position]
+            adapter.remove(elementToRemove)
+            adapter.notifyDataSetChanged()
+            Toast.makeText(this, "$elementToRemove removed", Toast.LENGTH_SHORT).show()
+        }
+        view.fabAdd.setOnClickListener {
+            adapter.add("New Item ${items.size + 1}")
+            adapter.notifyDataSetChanged()
         }
     }
 }
