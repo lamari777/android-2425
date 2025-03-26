@@ -27,13 +27,13 @@ class MainActivity : AppCompatActivity() {
         view.ltCountries.adapter = adapter
         view.ltCountries.setOnItemClickListener{ _, _, position, _ ->
             val element_to_remove = items[position]
-            // adapter.remove(element_to_remove)
+            adapter.remove(element_to_remove)
             adapter.notifyDataSetChanged()
             Toast.makeText(this, "Item $element_to_remove removed", Toast.LENGTH_SHORT).show()
         }
 
         view.fbtnAdd.setOnClickListener {
-            // adapter.add("New item: ${items.size + 1}")
+            adapter.add(Item("Name ${items.size + 1}", "Surname ${items.size + 1}"))
             adapter.notifyDataSetChanged()
         }
     }
@@ -44,6 +44,14 @@ class CustomAdapter(var items: List<Item>) : BaseAdapter() {
     class CustomAdapterViewHolder {
         lateinit var txt1 : TextView
         lateinit var txt2 : TextView
+    }
+
+    fun add(item : Item) {
+        items += item
+    }
+
+    fun remove(item : Item) {
+        items -= item
     }
 
     override fun getCount() : Int {
