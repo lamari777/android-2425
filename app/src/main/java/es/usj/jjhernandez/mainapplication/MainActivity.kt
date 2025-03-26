@@ -40,6 +40,12 @@ class MainActivity : AppCompatActivity() {
 }
 
 class CustomAdapter(var items: List<Item>) : BaseAdapter() {
+
+    class CustomAdapterViewHolder {
+        lateinit var txt1 : TextView
+        lateinit var txt2 : TextView
+    }
+
     override fun getCount() : Int {
         return items.size
     }
@@ -57,17 +63,19 @@ class CustomAdapter(var items: List<Item>) : BaseAdapter() {
         convertView : View?,
         parent : ViewGroup?
     ) : View {
+        var holderView = convertView
+        if(holderView == null) {
+            holderView = LayoutInflater.from(parent?.context!!).inflate(R.layout.single_item_layout, parent, false)
+            val viewHolder = CustomAdapterViewHolder()
+            viewHolder.txt1 = holderView.findViewById(R.id.txt_1)
+            viewHolder.txt2 = holderView.findViewById(R.id.txt_2)
+            holderView.tag = viewHolder
+        }
         val item = getItem(position)
-        val view = LayoutInflater.from(
-            parent?.context
-                ?: Activity()
-        ).inflate(R.layout.single_item_layout, parent,
-            false)
-        val txt_1 = view.findViewById<TextView>(R.id.txt_1)
-        val txt_2 = view.findViewById<TextView>(R.id.txt_2)
-        txt_1.text = item.name
-        txt_2.text = item.surname
-        return view
+        val viewHolder = holderView?.tag as CustomAdapterViewHolder
+        viewHolder.txt1.text = item.name
+        viewHolder.txt2.text = item.surname
+        return holderView
     }
 
 }
