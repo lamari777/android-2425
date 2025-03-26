@@ -11,12 +11,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MainApplication">
         <activity
-            android:name=".FourthActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ThirdActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -25,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SecondActivity" />
     </application>
 
 </manifest>
