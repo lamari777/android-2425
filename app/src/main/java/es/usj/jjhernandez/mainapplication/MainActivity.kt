@@ -1,6 +1,5 @@
 package es.usj.jjhernandez.mainapplication
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,19 +23,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
-        val adapter = CustomAdapter(items)
-        view.ltCountries.adapter = adapter
-        view.ltCountries.setOnItemClickListener{ _, _, position, _ ->
-            val element_to_remove = items[position]
-            adapter.remove(element_to_remove)
-            adapter.notifyDataSetChanged()
-            Toast.makeText(this, "Item $element_to_remove removed", Toast.LENGTH_SHORT).show()
-        }
-
-        view.fbtnAdd.setOnClickListener {
-            adapter.add(Item("Name ${items.size + 1}", "Surname ${items.size + 1}"))
-            adapter.notifyDataSetChanged()
-        }
+        val adapter = RecyclerViewAdapter()
+        view.rvCountries.adapter = adapter
+        view.rvCountries.layoutManager = LinearLayoutManager(this)
+        adapter.submitList(items)
+        view.rvCountries.adapter?.notifyDataSetChanged()
     }
 }
 
