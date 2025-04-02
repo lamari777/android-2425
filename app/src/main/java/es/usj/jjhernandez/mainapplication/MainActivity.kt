@@ -1,6 +1,5 @@
 package es.usj.jjhernandez.mainapplication
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +11,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ItemAddedObserver {
+
+    private val adapter = CustomAdapter()
+
     private val view by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -20,22 +22,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
-        val adapter = CustomAdapter()
+        ItemsDataSource.addListener(this)
         view.ltCountries.adapter = adapter
         view.ltCountries.setOnItemClickListener{ _, _, position, _ ->
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtra("position", position.toString())
-            startActivity(intent)
+            ItemsDataSource.removeByPosition(position)
+            adapter.notifyDataSetChanged()
         }
 
         view.fbtnAdd.setOnClickListener {
-            adapter.add(Item("Name ${ItemsDataSource.items.size + 1}", "Surname ${ItemsDataSource.items.size + 1}"))
-            adapter.notifyDataSetChanged()
+            ItemsDataSource.addItem(Item("Name", "Surname"))
         }
+    }
+
+    override fun notifyItemAdded() {
+        adapter.notifyDataSetChanged()
+        Toast.makeText(this, "Item added", Toast.LENGTH_SHORT).show()
     }
 }
 
-class CustomAdapter() : BaseAdapter() {
+class CustomAdapter : BaseAdapter() {
 
     class CustomAdapterViewHolder {
         lateinit var txt1 : TextView
@@ -51,7 +56,7 @@ class CustomAdapter() : BaseAdapter() {
     }
 
     override fun getItem(position : Int) : Item {
-        return ItemsDataSource.getItemByPosition(position)
+        return ItemsDataSource.items[position]
     }
 
     override fun getItemId(position : Int) : Long {

@@ -1,6 +1,12 @@
 package es.usj.jjhernandez.mainapplication
 
+interface ItemAddedObserver {
+    fun notifyItemAdded()
+}
+
 object ItemsDataSource {
+
+    private val _listeners = mutableListOf<ItemAddedObserver>()
 
     private val _items by lazy {
         (1 .. 1000).map { Item("Name $it", "Surname $it") }.toMutableList()
@@ -14,6 +20,11 @@ object ItemsDataSource {
 
     fun addItem(item: Item) {
         _items += item
+        _listeners.forEach { it.notifyItemAdded() }
+    }
+
+    fun addListener(listener: ItemAddedObserver) {
+        _listeners += listener
     }
 
     fun removeByPosition(position: Int) : Item {
