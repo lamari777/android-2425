@@ -3,6 +3,7 @@ package es.usj.jjhernandez.mainapplication
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -11,6 +12,10 @@ import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 const val TAG = "LOG"
 const val REQUEST_CODE = 999
@@ -18,6 +23,10 @@ const val REQUEST_CODE = 999
 class MainActivity : AppCompatActivity() {
 
     private val view by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val scope by lazy {
+        CoroutineScope(Dispatchers.IO)
+    }
 
     private val contract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
         val (_, data) = activityResult
@@ -30,23 +39,42 @@ class MainActivity : AppCompatActivity() {
         Log.v(TAG, "onCreate called")
 
         view.btnNavigateToSecond.setOnClickListener {
-            val intent = Intent(this, SecondActivity::class.java)
-            startActivity(intent)
+            Thread {
+                while(true) {
+                    Thread.sleep(100)
+                    Log.v("LOOPING", "Sleeping from thread...")
+                }
+            }.start()
+
         }
 
         view.btnCall.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL,
-                Uri.parse("tel:911"))
-            try {
-                startActivity(intent)
-            } catch (ex: ActivityNotFoundException) {
-                print(ex.message)
-            }
+            val task = MyAsyncTask()
+            task.execute()
         }
 
         view.btnForResult.setOnClickListener {
-            val intent = Intent(this, SecondActivity::class.java)
-            contract.launch(intent)
+            scope.launch {
+                while(true) {
+                    Thread.sleep(100)
+                    Log.v("LOOPING", "Sleeping from coroutine...")
+                    runOnUiThread {
+                        view.tvContent.text = "Sleeping from coroutine..."
+                    }
+                    withContext(Dispatchers.Main) {
+                        view.tvContent.text = "Sleeping from coroutine but with context..."
+                    }
+                }
+            }
+        }
+    }
+
+    class MyAsyncTask : AsyncTask<Unit, Unit, Unit>() {
+        override fun doInBackground(vararg params: Unit?) {
+            while(true) {
+                Thread.sleep(100)
+                Log.v("LOOPING", "Sleeping from AsyncTask...")
+            }
         }
     }
 
