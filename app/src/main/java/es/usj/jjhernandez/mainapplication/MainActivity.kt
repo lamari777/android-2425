@@ -1,24 +1,24 @@
 package es.usj.jjhernandez.mainapplication
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.result.component1
-import androidx.activity.result.component2
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import es.usj.jjhernandez.mainapplication.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 const val TAG = "LOG"
 const val REQUEST_CODE = 999
+
+data class HealthCheck(val status: String)
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,91 +28,43 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO)
     }
 
-    private val contract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-        val (_, data) = activityResult
-        Toast.makeText(this, "Well done ${data?.getStringExtra(EXTRA_KEY)}", Toast.LENGTH_SHORT).show()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
-        Log.v(TAG, "onCreate called")
 
-        view.btnNavigateToSecond.setOnClickListener {
-            Thread {
-                while(true) {
-                    Thread.sleep(100)
-                    Log.v("LOOPING", "Sleeping from thread...")
-                }
-            }.start()
 
-        }
-
-        view.btnCall.setOnClickListener {
-            val task = MyAsyncTask()
-            task.execute()
-        }
-
-        view.btnForResult.setOnClickListener {
+        view.btnRequest.setOnClickListener {
             scope.launch {
-                while(true) {
-                    Thread.sleep(100)
-                    Log.v("LOOPING", "Sleeping from coroutine...")
-                    runOnUiThread {
-                        view.tvContent.text = "Sleeping from coroutine..."
-                    }
-                    withContext(Dispatchers.Main) {
-                        view.tvContent.text = "Sleeping from coroutine but with context..."
-                    }
+                val content = request()
+                val obj = Gson().fromJson<HealthCheck>(content, HealthCheck::class.java)
+                withContext(Dispatchers.Main) {
+                    view.tvContent.text = obj.status
                 }
             }
         }
     }
 
-    class MyAsyncTask : AsyncTask<Unit, Unit, Unit>() {
-        override fun doInBackground(vararg params: Unit?) {
-            while(true) {
-                Thread.sleep(100)
-                Log.v("LOOPING", "Sleeping from AsyncTask...")
-            }
+    private fun request() : String {
+        var connection: HttpURLConnection? = null
+        var inputStream: BufferedInputStream? = null
+        try {
+            val url = URL("http://10.0.2.2:8080/health-check")
+            connection = url.openConnection() as HttpURLConnection
+            inputStream = BufferedInputStream(connection.inputStream)
+            return readContent(inputStream)
+        } finally {
+            inputStream?.close()
+            connection?.disconnect()
         }
     }
 
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            Toast.makeText(this, "Well done ${data?.getStringExtra(EXTRA_KEY)}", Toast.LENGTH_SHORT).show()
+    private fun readContent(inputStream: InputStream) : String {
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val stringBuilder = StringBuilder()
+        var line: String
+        while ((reader.readLine().also { line = it }) != null) {
+            stringBuilder.append(line).append('\n')
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.v(TAG, "onStart called")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.v(TAG, "onResume called")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.v(TAG, "onPause called")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.v(TAG, "onStop called")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.v(TAG, "onDestroy called")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.v(TAG, "onRestart called")
+        return stringBuilder.toString()
     }
 }
